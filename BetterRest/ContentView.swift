@@ -8,7 +8,9 @@
 import SwiftUI
 import CoreML
 
+
 struct ContentView: View {
+
     @State private var sleepAmount = 8.0
     @State private var wakeUp = defaultWakeTime
     @State private var coffeeAmount = 1
@@ -24,40 +26,61 @@ struct ContentView: View {
         return Calendar.current.date(from: components) ?? Date.now
     }
     var body: some View {
+    
         NavigationView {
-            Form {
-                VStack(alignment: .center, spacing: 20) {
-                    Text("When do you you want to wake up?")
-                        .font(.headline)
-                    DatePicker("Pick a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("How long do you want to sleep?")
-                        .font(.headline)
-                    Stepper("\(sleepAmount.formatted()) hours" , value: $sleepAmount, in: 4...12, step: 0.25)
+                Form {
+                    VStack(alignment: .center, spacing: 20) {
+                        Text("When do you you want to wake up?")
+                            .font(.headline)
+                        DatePicker("Pick a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
+                            .labelsHidden()
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("How long do you want to sleep?")
+                            .font(.headline)
+                        Stepper("\(sleepAmount.formatted()) hours" , value: $sleepAmount, in: 4...12, step: 0.25)
+                        
+                    }
+                    
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Daily coffee amount")
+                            .font(.headline)
+                        Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
+                    }
+                    
                     
                 }
-                
-                
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Daily coffee amount")
-                        .font(.headline)
-                    Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
+                .background(LinearGradient(stops: [
+                    .init(color: Color(red: 255/255, green: 231/255, blue: 204/255), location: 0.3),
+                    .init(color: Color(red: 255/255, green: 251/255, blue: 235/255), location: 0.6),
+                    .init(color: Color(red: 236/255, green: 249/255, blue: 255/255), location: 1)
+                ], startPoint: .bottom, endPoint: .top))
+                .onAppear(perform: {
+                                UITableView.appearance().backgroundColor = UIColor.clear
+                                UITableViewCell.appearance().backgroundColor = UIColor.clear
+                            })
+                .navigationTitle("BetterRest")
+                .toolbar {
+                    Button("Calculate", action: calculateBedtime)
                 }
+                
+                .alert(alertTitle, isPresented: $showingAlert) {
+                    Button("OK") {}
+                }message: {
+                    Text(alertMessage)
+                }
+            
+            
             }
-            .navigationTitle("BetterRest")
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK") {}
-            }message: {
-                Text(alertMessage)
-            }
-        }
+        
     }
+        
+        
+    
+    
+   
     //CoreML using
     func calculateBedtime() {
         do {
@@ -89,3 +112,5 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
